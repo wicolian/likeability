@@ -5,7 +5,9 @@
         "origins": [
           "http://localhost:3000",
           "http://localhost:3001",
-          "https://likeability.fyi"
+          "https://likeability.fyi",
+          "https://likeability.vercel.app",
+          "https://*.vercel.app"
         ],
         "methods": ["GET", "PUT", "HEAD"],
         "headers": ["*"]
