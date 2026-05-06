@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "PressStart2P";
+  src: url("/fonts/PressStart2P.ttf") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  --font-pixel: "PressStart2P", monospace;
+  --font-clean: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-bg: #0d0d14;
+  --color-surface: #1a1a2e;
+  --color-border: #2d2d4e;
+  --color-green: #39ff14;
+  --color-orange: #ff6b00;
+  --color-red: #ff2244;
+  --color-dim: #6b6b8a;
+  --color-white: #e8e8f0;
+  --color-panel: #111827;
+}
+
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-white);
+  --font-sans: var(--font-pixel);
+  --font-mono: var(--font-pixel);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-bg);
+  font-family: var(--font-pixel);
+  letter-spacing: 0;
+}
+
+html[data-mode="presentation"] {
+  --color-bg: #101114;
+  --color-surface: #181a20;
+  --color-border: #343741;
+  --color-green: #d7f8d0;
+  --color-orange: #ffd2b2;
+  --color-red: #ff8fa3;
+  --color-dim: #9ba0ad;
+  --color-white: #f1f3f7;
+  font-family: var(--font-clean);
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+video,
+canvas {
+  image-rendering: auto;
+}
+
+.pixel-border {
+  border: 3px solid var(--color-border);
+  box-shadow:
+    3px 0 0 var(--color-border),
+    -3px 0 0 var(--color-border),
+    0 3px 0 var(--color-border),
+    0 -3px 0 var(--color-border);
+  image-rendering: pixelated;
+}
+
+.pixel-border-green {
+  border: 3px solid var(--color-green);
+  box-shadow:
+    3px 0 0 var(--color-green),
+    -3px 0 0 var(--color-green),
+    0 3px 0 var(--color-green),
+    0 -3px 0 var(--color-green);
+  image-rendering: pixelated;
+}
+
+.pixel-button {
+  box-shadow: 3px 3px 0 currentColor;
+}
+
+.pixel-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 currentColor;
+}
+
+.pixel-input {
+  border: 3px solid var(--color-border);
+  background: #050509;
+  color: var(--color-white);
+  min-height: 48px;
+  padding: 12px 14px;
+  outline: none;
+}
+
+.pixel-input:focus {
+  border-color: var(--color-green);
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 3px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-white);
+}
+
+.device-perspective {
+  perspective: 1100px;
+}
+
+.device-shell {
+  position: relative;
+  width: 100%;
+  min-height: 260px;
+  border: 5px solid #050509;
+  background: #050509;
+  box-shadow:
+    0 0 0 3px var(--color-border),
+    8px 8px 0 rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.device-topbar {
+  display: flex;
+  height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 3px solid var(--color-border);
+  background: #0b0b11;
+  padding: 0 12px;
+  color: var(--color-dim);
+  font-size: 8px;
+}
+
+.device-led {
+  width: 8px;
+  height: 8px;
+  background: var(--color-green);
+  box-shadow: 0 0 10px var(--color-green);
+}
+
+.device-screen {
+  position: absolute;
+  inset: 34px 0 0;
+  overflow: hidden;
+  background: black;
+}
+
+.device-tab {
+  flex: 0 0 auto;
+  border: 3px solid var(--color-border);
+  background: #050509;
+  color: var(--color-dim);
+  padding: 10px 12px;
+  font-size: 9px;
+}
+
+.device-tab-active {
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.countdown {
+  border: 3px solid currentColor;
+  background: #050509;
+  padding: 12px 14px;
+  font-size: 10px;
+}
+
+.comment-pin {
+  position: absolute;
+  z-index: 30;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  translate: -50% -50%;
+  place-items: center;
+  border: 3px solid var(--color-green);
+  background: #050509;
+  color: var(--color-green);
+}
+
+.comment-bubble {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  width: min(260px, 70vw);
+  border: 3px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 12px;
+  color: var(--color-white);
+  font-size: 9px;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.comment-form {
+  position: absolute;
+  z-index: 40;
+  translate: -12px -12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 3px solid var(--color-green);
+  background: var(--color-surface);
+  padding: 12px;
+  color: var(--color-white);
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-mode="presentation"] .pixel-border,
+html[data-mode="presentation"] .pixel-border-green,
+html[data-mode="presentation"] .pixel-button,
+html[data-mode="presentation"] .device-shell,
+html[data-mode="presentation"] .device-tab,
+html[data-mode="presentation"] .countdown,
+html[data-mode="presentation"] .icon-button,
+html[data-mode="presentation"] .pixel-input {
+  box-shadow: none;
+  border-width: 1px;
+}
+
+html[data-mode="presentation"] .device-topbar {
+  border-bottom-width: 1px;
+}
+
+@media (max-width: 640px) {
+  .device-topbar {
+    font-size: 7px;
+  }
+
+  .comment-form {
+    max-width: calc(100vw - 32px);
+  }
+
+  .comment-form textarea {
+    width: min(260px, calc(100vw - 76px));
+  }
+}

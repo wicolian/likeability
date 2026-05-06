@@ -1,65 +1,180 @@
-import Image from "next/image";
+"use client";
+
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { toast } from "sonner";
+import { DropZone } from "@/components/upload/DropZone";
+import { LinkInput } from "@/components/upload/LinkInput";
+import { UploadProgress } from "@/components/upload/UploadProgress";
+import { SessionConfig, type SessionConfigValue } from "@/components/session/SessionConfig";
+import { ShareLink } from "@/components/session/ShareLink";
+import { DeviceSelector } from "@/components/device/DeviceSelector";
+import { DeviceFrame } from "@/components/device/DeviceFrame";
+import { MediaRenderer } from "@/components/media/MediaRenderer";
+import { PresentationMode } from "@/components/ui/PresentationMode";
+import { SoundToggle } from "@/components/ui/SoundToggle";
+import { PixelButton } from "@/components/ui/PixelButton";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { detectVariantTypeFromUrl } from "@/lib/video-url";
+import { playSound } from "@/lib/sounds";
+import type { DeviceType, Variant } from "@/lib/types";
+
+interface SessionState {
+  session_id: string;
+  slug: string;
+  share_url: string;
+  expires_at: string;
+}
 
 export default function Home() {
+  const [configOpen, setConfigOpen] = useState(false);
+  const [pendingConfig, setPendingConfig] = useState<SessionConfigValue | null>(null);
+  const [session, setSession] = useState<SessionState | null>(null);
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [device, setDevice] = useState<DeviceType>("iphone-16-pro-portrait");
+  const [busy, setBusy] = useState(false);
+  const { uploadFile, progress, isUploading } = useFileUpload();
+
+  async function createSession(config: SessionConfigValue) {
+    const response = await fetch("/api/session/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(config),
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error ?? "Could not create session");
+    playSound("upload");
+    setSession(payload);
+    return payload as SessionState;
+  }
+
+  async function ensureSession(config = pendingConfig ?? { password: null, expires_in_hours: 24 }) {
+    if (session) return session;
+    const created = await createSession(config);
+    setPendingConfig(config);
+    return created;
+  }
+
+  async function handleFiles(files: File[]) {
+    if (variants.length + files.length > 5) {
+      toast.error("MAX 5 VARIANTS PER SESSION.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const activeSession = await ensureSession();
+      const uploaded: Variant[] = [];
+      for (const file of files) {
+        const variant = await uploadFile(activeSession.session_id, file);
+        uploaded.push(variant as Variant);
+      }
+      setVariants((current) => [...current, ...uploaded].slice(0, 5));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLink(url: string, type: ReturnType<typeof detectVariantTypeFromUrl>) {
+    if (variants.length >= 5) {
+      toast.error("MAX 5 VARIANTS PER SESSION.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const activeSession = await ensureSession();
+      const response = await fetch(`/api/session/${activeSession.session_id}/variant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: activeSession.session_id,
+          type,
+          public_url: url,
+          original_name: type === "figma" ? "Figma link" : "Video link",
+          storage_key: null,
+          file_size_bytes: null,
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Could not add link");
+      setVariants((current) => [...current, payload.variant]);
+      playSound("upload");
+      toast.success("LINK ACCEPTED.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not add link");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-white)] md:p-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+        <header className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-lg text-[var(--color-green)] md:text-2xl">LIKEABILITY</h1>
+            <p className="mt-2 max-w-[640px] text-[10px] leading-6 text-[var(--color-dim)]">
+              UPLOAD MOCKS. SHARE ONE LINK. COLLECT ANONYMOUS VOTES AND PINNED COMMENTS.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <SoundToggle />
+            <PresentationMode />
+          </div>
+        </header>
+
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]">
+          <div className="space-y-4">
+            <DropZone disabled={busy || isUploading || variants.length >= 5} onFiles={(files) => void handleFiles(files)} />
+            {isUploading ? <UploadProgress value={progress} /> : null}
+            <LinkInput disabled={busy || variants.length >= 5} onLink={handleLink} />
+            <div className="flex flex-wrap items-center gap-3">
+              <PixelButton onClick={() => setConfigOpen(true)} tone="orange" type="button">
+                SESSION SETTINGS
+              </PixelButton>
+              {session ? <ShareLink url={session.share_url} /> : null}
+              <span className="text-[10px] text-[var(--color-dim)]">{variants.length}/5 VARIANTS</span>
+            </div>
+            {session ? (
+              <div className="pixel-border bg-[var(--color-surface)] p-4 text-[10px] leading-6 text-[var(--color-dim)]">
+                SHARE URL: <span className="text-[var(--color-white)]">{session.share_url}</span>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="space-y-4">
+            <DeviceSelector value={device} onChange={setDevice} />
+            <motion.div className="pixel-border min-h-[420px] bg-[var(--color-surface)] p-4" layout>
+              {variants[0] ? (
+                <DeviceFrame device={device}>
+                  <div className="relative h-full w-full">
+                    <MediaRenderer variant={variants[0]} />
+                  </div>
+                </DeviceFrame>
+              ) : (
+                <div className="grid min-h-[380px] place-items-center text-center text-[10px] leading-6 text-[var(--color-dim)]">
+                  FIRST VARIANT PREVIEW APPEARS HERE.
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </section>
+      </div>
+
+      <SessionConfig
+        open={configOpen}
+        onClose={() => setConfigOpen(false)}
+        onSubmit={(config) => {
+          setPendingConfig(config);
+          setConfigOpen(false);
+          if (!session) {
+            void createSession(config).catch((error) =>
+              toast.error(error instanceof Error ? error.message : "Could not create session"),
+            );
+          }
+        }}
+      />
+    </main>
   );
 }
