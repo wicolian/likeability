@@ -13,6 +13,7 @@ View inside device mockups. Anonymous voting. Zone comments. Auto-destruct sessi
 - react-player: latest
 - @lottiefiles/dotlottie-react: latest
 - @rive-app/react-canvas: latest
+- react-sounds: latest
 - howler: 2.x
 - @supabase/supabase-js: 2.x
 - @aws-sdk/client-s3: 3.x + @aws-sdk/s3-request-presigner: 3.x

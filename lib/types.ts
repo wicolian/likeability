@@ -13,7 +13,11 @@ export type DeviceType =
   | "instagram-post"
   | "instagram-story"
   | "instagram-reel"
+  | "linkedin-feed-mobile"
+  | "linkedin-feed"
   | "linkedin-banner"
+  | "x-post"
+  | "tiktok"
   | "desktop-browser"
   | "ipad-pro-portrait";
 

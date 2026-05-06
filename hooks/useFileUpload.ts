@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { readApiResponse } from "@/lib/http";
 import { playSound } from "@/lib/sounds";
 import { variantTypeFromUpload } from "@/lib/validators";
 
@@ -39,12 +40,16 @@ export function useFileUpload() {
         }),
       });
 
-      const presigned = await presignedResponse.json();
+      const presigned = await readApiResponse(presignedResponse);
       if (!presignedResponse.ok) throw new Error(presigned.error ?? "Could not prepare upload");
+      const presignedUrl = String(presigned.presigned_url ?? "");
+      const storageKey = String(presigned.storage_key ?? "");
+      const publicUrl = String(presigned.public_url ?? "");
+      if (!presignedUrl || !storageKey || !publicUrl) throw new Error("Upload response was incomplete");
 
       await new Promise<void>((resolve, reject) => {
         const request = new XMLHttpRequest();
-        request.open("PUT", presigned.presigned_url);
+        request.open("PUT", presignedUrl);
         request.setRequestHeader("Content-Type", file.type || "application/octet-stream");
         request.upload.onprogress = (event) => {
           if (!event.lengthComputable) return;
@@ -64,20 +69,25 @@ export function useFileUpload() {
         body: JSON.stringify({
           session_id: sessionId,
           type: variantTypeFromUpload(file.name, file.type || "application/octet-stream"),
-          storage_key: presigned.storage_key,
-          public_url: presigned.public_url,
+          storage_key: storageKey,
+          public_url: publicUrl,
           original_name: file.name,
           file_size_bytes: file.size,
         }),
       });
 
-      const variant = await variantResponse.json();
+      const variant = await readApiResponse(variantResponse);
       if (!variantResponse.ok) throw new Error(variant.error ?? "Upload registered but variant failed");
 
       setProgress(100);
       playSound("upload");
-      return { ...variant.variant, storage_key: presigned.storage_key, public_url: presigned.public_url };
+      return {
+        ...(variant.variant as object),
+        storage_key: storageKey,
+        public_url: publicUrl,
+      } as UploadResult;
     } catch (error) {
+      playSound("uploadFailed");
       toast.error(error instanceof Error ? error.message : "Upload failed");
       throw error;
     } finally {

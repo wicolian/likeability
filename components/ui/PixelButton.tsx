@@ -2,12 +2,15 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface PixelButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  tone?: "green" | "orange" | "red" | "neutral";
+  tone?: "green" | "orange" | "cyan" | "pink" | "yellow" | "red" | "neutral";
 }
 
 const tones = {
   green: "border-[var(--color-green)] text-[var(--color-green)] hover:bg-[rgba(57,255,20,0.12)]",
   orange: "border-[var(--color-orange)] text-[var(--color-orange)] hover:bg-[rgba(255,107,0,0.12)]",
+  cyan: "border-[var(--color-cyan)] text-[var(--color-cyan)] hover:bg-[rgba(0,229,255,0.12)]",
+  pink: "border-[var(--color-pink)] text-[var(--color-pink)] hover:bg-[rgba(255,79,216,0.12)]",
+  yellow: "border-[var(--color-yellow)] text-[var(--color-yellow)] hover:bg-[rgba(255,225,77,0.12)]",
   red: "border-[var(--color-red)] text-[var(--color-red)] hover:bg-[rgba(255,34,68,0.12)]",
   neutral: "border-[var(--color-border)] text-[var(--color-white)] hover:bg-[rgba(255,255,255,0.06)]",
 };

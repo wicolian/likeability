@@ -19,7 +19,7 @@ export function DropZone({ disabled, onFiles }: DropZoneProps) {
 
   return (
     <button
-      className={`pixel-border flex min-h-72 w-full flex-col items-center justify-center gap-5 bg-[var(--color-surface)] p-8 text-center transition ${
+      className={`pixel-border-cyan relative flex min-h-72 w-full flex-col items-center justify-center gap-5 overflow-hidden bg-[var(--color-surface)] p-8 text-center transition ${
         dragging ? "pixel-border-green" : ""
       }`}
       disabled={disabled}
@@ -37,11 +37,16 @@ export function DropZone({ disabled, onFiles }: DropZoneProps) {
       }}
       type="button"
     >
+      <span className="absolute left-0 top-0 h-2 w-1/4 bg-[var(--color-green)]" />
+      <span className="absolute left-1/4 top-0 h-2 w-1/4 bg-[var(--color-cyan)]" />
+      <span className="absolute left-1/2 top-0 h-2 w-1/4 bg-[var(--color-pink)]" />
+      <span className="absolute left-3/4 top-0 h-2 w-1/4 bg-[var(--color-yellow)]" />
       <Upload size={34} className="text-[var(--color-green)]" />
-      <span className="text-balance text-sm leading-7 text-[var(--color-white)]">
-        DROP FILES OR CLICK TO UPLOAD
+      <span className="flex max-w-full flex-col gap-2 text-center text-[11px] leading-5 text-[var(--color-white)] sm:text-sm sm:leading-7">
+        <span>DROP FILES OR CLICK</span>
+        <span>TO UPLOAD</span>
       </span>
-      <span className="max-w-lg text-[10px] leading-6 text-[var(--color-dim)]">
+      <span className="block max-w-[30ch] text-[10px] leading-6 text-[var(--color-dim)] sm:max-w-lg">
         PNG, JPEG, WEBP, PDF, MP4, WEBM, LOTTIE, RIVE. MAX 5 VARIANTS.
       </span>
       <input

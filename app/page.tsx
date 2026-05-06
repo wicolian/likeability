@@ -11,10 +11,12 @@ import { ShareLink } from "@/components/session/ShareLink";
 import { DeviceSelector } from "@/components/device/DeviceSelector";
 import { DeviceFrame } from "@/components/device/DeviceFrame";
 import { MediaRenderer } from "@/components/media/MediaRenderer";
+import { ResponsivePreviewPanel } from "@/components/preview/ResponsivePreviewPanel";
 import { PresentationMode } from "@/components/ui/PresentationMode";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { useFileUpload } from "@/hooks/useFileUpload";
+import { readApiResponse } from "@/lib/http";
 import { detectVariantTypeFromUrl } from "@/lib/video-url";
 import { playSound } from "@/lib/sounds";
 import type { DeviceType, Variant } from "@/lib/types";
@@ -32,6 +34,7 @@ export default function Home() {
   const [session, setSession] = useState<SessionState | null>(null);
   const [variants, setVariants] = useState<Variant[]>([]);
   const [device, setDevice] = useState<DeviceType>("iphone-16-pro-portrait");
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const { uploadFile, progress, isUploading } = useFileUpload();
 
@@ -41,11 +44,12 @@ export default function Home() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(config),
     });
-    const payload = await response.json();
+    const payload = await readApiResponse(response);
     if (!response.ok) throw new Error(payload.error ?? "Could not create session");
     playSound("upload");
-    setSession(payload);
-    return payload as SessionState;
+    const created = payload as unknown as SessionState;
+    setSession(created);
+    return created;
   }
 
   async function ensureSession(config = pendingConfig ?? { password: null, expires_in_hours: 24 }) {
@@ -70,6 +74,9 @@ export default function Home() {
         uploaded.push(variant as Variant);
       }
       setVariants((current) => [...current, ...uploaded].slice(0, 5));
+    } catch (error) {
+      playSound("uploadFailed");
+      toast.error(error instanceof Error ? error.message : "Upload failed");
     } finally {
       setBusy(false);
     }
@@ -96,12 +103,13 @@ export default function Home() {
           file_size_bytes: null,
         }),
       });
-      const payload = await response.json();
+      const payload = await readApiResponse(response);
       if (!response.ok) throw new Error(payload.error ?? "Could not add link");
-      setVariants((current) => [...current, payload.variant]);
+      setVariants((current) => [...current, payload.variant as Variant]);
       playSound("upload");
       toast.success("LINK ACCEPTED.");
     } catch (error) {
+      playSound("uploadFailed");
       toast.error(error instanceof Error ? error.message : "Could not add link");
     } finally {
       setBusy(false);
@@ -111,8 +119,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-white)] md:p-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <header className="flex items-center justify-between gap-4">
-          <div>
+        <header className="pixel-border relative flex items-center justify-between gap-4 overflow-hidden bg-[var(--color-surface)] p-4">
+          <span className="absolute bottom-0 left-0 h-1 w-1/5 bg-[var(--color-green)]" />
+          <span className="absolute bottom-0 left-1/5 h-1 w-1/5 bg-[var(--color-cyan)]" />
+          <span className="absolute bottom-0 left-2/5 h-1 w-1/5 bg-[var(--color-pink)]" />
+          <span className="absolute bottom-0 left-3/5 h-1 w-1/5 bg-[var(--color-yellow)]" />
+          <span className="absolute bottom-0 left-4/5 h-1 w-1/5 bg-[var(--color-orange)]" />
+          <div className="min-w-0">
             <h1 className="text-lg text-[var(--color-green)] md:text-2xl">LIKEABILITY</h1>
             <p className="mt-2 max-w-[640px] text-[10px] leading-6 text-[var(--color-dim)]">
               UPLOAD MOCKS. SHARE ONE LINK. COLLECT ANONYMOUS VOTES AND PINNED COMMENTS.
@@ -130,7 +143,7 @@ export default function Home() {
             {isUploading ? <UploadProgress value={progress} /> : null}
             <LinkInput disabled={busy || variants.length >= 5} onLink={handleLink} />
             <div className="flex flex-wrap items-center gap-3">
-              <PixelButton onClick={() => setConfigOpen(true)} tone="orange" type="button">
+              <PixelButton onClick={() => setConfigOpen(true)} tone="pink" type="button">
                 SESSION SETTINGS
               </PixelButton>
               {session ? <ShareLink url={session.share_url} /> : null}
@@ -147,11 +160,18 @@ export default function Home() {
             <DeviceSelector value={device} onChange={setDevice} />
             <motion.div className="pixel-border min-h-[420px] bg-[var(--color-surface)] p-4" layout>
               {variants[0] ? (
-                <DeviceFrame device={device}>
-                  <div className="relative h-full w-full">
-                    <MediaRenderer variant={variants[0]} />
+                <div className="space-y-3">
+                  <div className="flex justify-end">
+                    <button className="device-tab text-[8px]" onClick={() => setPreviewOpen(true)} type="button">
+                      👁 PREVIEW ALL SCREENS
+                    </button>
                   </div>
-                </DeviceFrame>
+                  <DeviceFrame device={device}>
+                    <div className="relative h-full w-full">
+                      <MediaRenderer variant={variants[0]} />
+                    </div>
+                  </DeviceFrame>
+                </div>
               ) : (
                 <div className="grid min-h-[380px] place-items-center text-center text-[10px] leading-6 text-[var(--color-dim)]">
                   FIRST VARIANT PREVIEW APPEARS HERE.
@@ -175,6 +195,9 @@ export default function Home() {
           }
         }}
       />
+      {variants[0] ? (
+        <ResponsivePreviewPanel isOpen={previewOpen} onClose={() => setPreviewOpen(false)} variant={variants[0]} />
+      ) : null}
     </main>
   );
 }

@@ -25,6 +25,7 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
   const [needsPassword, setNeedsPassword] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
   const [device, setDevice] = useState<DeviceType>("iphone-16-pro-portrait");
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
@@ -62,6 +63,18 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
 
   const votes = useVotes(payload?.session.id ?? "", payload?.votes ?? {});
   const comments = useComments(payload?.session.id ?? "", payload?.comments ?? []);
+  const useInstagramCarousel =
+    !!payload &&
+    (device === "instagram-post" || device === "instagram-reel") &&
+    payload.variants.length >= 2 &&
+    payload.variants.length <= 5 &&
+    payload.variants.every((variant) => variant.type === "image");
+  const activeCarouselVariant = useInstagramCarousel ? payload.variants[carouselIndex] : null;
+
+  useEffect(() => {
+    if (!payload) return;
+    setCarouselIndex((current) => Math.min(current, Math.max(0, payload.variants.length - 1)));
+  }, [payload]);
 
   if (status === 410 || status === 404) return <ExpiredScreen status={status} />;
 
@@ -102,8 +115,13 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
   return (
     <main className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-white)] md:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
+        <header className="pixel-border relative flex flex-col gap-4 overflow-hidden bg-[var(--color-surface)] p-4 md:flex-row md:items-center md:justify-between">
+          <span className="absolute bottom-0 left-0 h-1 w-1/5 bg-[var(--color-green)]" />
+          <span className="absolute bottom-0 left-1/5 h-1 w-1/5 bg-[var(--color-cyan)]" />
+          <span className="absolute bottom-0 left-2/5 h-1 w-1/5 bg-[var(--color-pink)]" />
+          <span className="absolute bottom-0 left-3/5 h-1 w-1/5 bg-[var(--color-yellow)]" />
+          <span className="absolute bottom-0 left-4/5 h-1 w-1/5 bg-[var(--color-orange)]" />
+          <div className="min-w-0 space-y-2">
             <h1 className="text-lg text-[var(--color-green)]">LIKEABILITY / {payload.session.slug}</h1>
             <p className="text-[10px] text-[var(--color-dim)]">VOTING IS LIMITED TO ONE VOTE PER NETWORK.</p>
           </div>
@@ -116,16 +134,32 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
         </header>
         <DeviceSelector value={device} onChange={setDevice} />
         <section className="grid gap-8 xl:grid-cols-2">
-          {payload.variants.map((variant) => (
-            <VoteCard
-              comments={comments}
-              count={votes[variant.id] ?? 0}
-              device={device}
-              key={variant.id}
-              sessionId={payload.session.id}
-              variant={variant}
-            />
-          ))}
+          {activeCarouselVariant ? (
+            <div className="xl:col-span-2">
+              <VoteCard
+                comments={comments}
+                count={votes[activeCarouselVariant.id] ?? 0}
+                device={device}
+                isCarousel
+                onSlideChange={setCarouselIndex}
+                sessionId={payload.session.id}
+                totalVariants={payload.variants.length}
+                variant={activeCarouselVariant}
+                variantIndex={carouselIndex}
+              />
+            </div>
+          ) : (
+            payload.variants.map((variant) => (
+              <VoteCard
+                comments={comments}
+                count={votes[variant.id] ?? 0}
+                device={device}
+                key={variant.id}
+                sessionId={payload.session.id}
+                variant={variant}
+              />
+            ))
+          )}
         </section>
       </div>
     </main>

@@ -11,6 +11,7 @@ export function ShareLink({ url }: { url: string }) {
         void navigator.clipboard.writeText(url);
         toast.success("LINK COPIED.");
       }}
+      tone="yellow"
       type="button"
     >
       <Copy size={15} /> COPY LINK

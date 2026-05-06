@@ -39,7 +39,7 @@ export function LinkInput({ disabled, onLink }: LinkInputProps) {
 
   return (
     <div className="flex w-full flex-col gap-3 md:flex-row">
-      <label className="relative flex-1">
+      <label className="relative min-w-0 flex-1">
         <Link2 className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-dim)]" size={18} />
         <input
           className="pixel-input w-full pl-12"

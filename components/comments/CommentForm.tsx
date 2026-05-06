@@ -38,6 +38,7 @@ export function CommentForm({ sessionId, variantId, x, y, onClose }: CommentForm
       playSound("comment");
       onClose();
     } catch (error) {
+      playSound("negativeReaction");
       toast.error(error instanceof Error ? error.message : "Could not post comment");
     } finally {
       setPending(false);
