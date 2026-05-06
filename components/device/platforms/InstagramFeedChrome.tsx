@@ -79,9 +79,10 @@ export function InstagramFeedChrome({
             {showSafeZone ? <SafeZoneOverlay kind="instagram-feed" /> : null}
             {hasCarousel ? (
               <>
+                {/* z-30 keeps arrows above the comment overlay (z-20) */}
                 <button
                   aria-label="Previous slide"
-                  className="absolute left-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white"
+                  className="absolute left-2 top-1/2 z-30 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white"
                   onClick={() => onSlideChange?.(Math.max(0, variantIndex - 1))}
                   type="button"
                 >
@@ -89,7 +90,7 @@ export function InstagramFeedChrome({
                 </button>
                 <button
                   aria-label="Next slide"
-                  className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white"
+                  className="absolute right-2 top-1/2 z-30 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white"
                   onClick={() => onSlideChange?.(Math.min(totalVariants - 1, variantIndex + 1))}
                   type="button"
                 >

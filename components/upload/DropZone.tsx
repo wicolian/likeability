@@ -43,11 +43,14 @@ export function DropZone({ disabled, onFiles }: DropZoneProps) {
       <span className="absolute left-3/4 top-0 h-2 w-1/4 bg-[var(--color-yellow)]" />
       <Upload size={34} className="text-[var(--color-green)]" />
       <span className="flex max-w-full flex-col gap-2 text-center text-[11px] leading-5 text-[var(--color-white)] sm:text-sm sm:leading-7">
-        <span>DROP FILES OR CLICK</span>
+        <span>DROP UP TO 5 FILES OR CLICK</span>
         <span>TO UPLOAD</span>
       </span>
       <span className="block max-w-[30ch] text-[10px] leading-6 text-[var(--color-dim)] sm:max-w-lg">
-        PNG, JPEG, WEBP, PDF, MP4, WEBM, LOTTIE, RIVE. MAX 5 VARIANTS.
+        PNG · JPEG · WEBP · PDF · MP4 · WEBM · LOTTIE · RIVE
+      </span>
+      <span className="block text-[9px] leading-5 text-[var(--color-cyan)]">
+        SELECT MULTIPLE FILES TO COMPARE VARIANTS SIDE BY SIDE
       </span>
       <input
         ref={inputRef}

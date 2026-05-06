@@ -267,6 +267,116 @@ canvas {
   background: var(--color-surface);
   padding: 12px;
   color: var(--color-white);
+  /* Prevent form from causing layout reflow when textarea focuses */
+  will-change: transform;
+}
+
+/* "Click to comment" hint — sits at the bottom of the design overlay */
+.comment-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 2px solid var(--color-border);
+  color: var(--color-dim);
+  font-size: 7px;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.comment-hint-count {
+  background: var(--color-yellow);
+  color: #000;
+  font-size: 7px;
+  padding: 1px 5px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Vote buttons */
+.vote-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 10px;
+  font-size: 9px;
+  border: 3px solid var(--color-border);
+  background: #030303;
+  color: var(--color-dim);
+  transition: border-color 0.1s, color 0.1s, box-shadow 0.1s;
+}
+
+.vote-btn:not(:disabled):hover {
+  border-color: currentColor;
+}
+
+.vote-btn-like:not(:disabled) {
+  color: var(--color-green);
+  border-color: var(--color-green);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+}
+
+.vote-btn-pass:not(:disabled) {
+  color: var(--color-red);
+  border-color: var(--color-red);
+  box-shadow: 0 0 10px rgba(255, 34, 68, 0.15);
+}
+
+.vote-btn-done {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.vote-btn-chosen {
+  opacity: 1 !important;
+}
+
+/* Vote count pill */
+.vote-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: rgba(57, 255, 20, 0.1);
+  border: 2px solid rgba(57, 255, 20, 0.35);
+  color: var(--color-green);
+  font-size: 9px;
+  white-space: nowrap;
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.12);
+  min-width: 56px;
+  text-align: center;
+}
+
+/* Promotional footer on share page */
+.promo-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border-top: 3px solid var(--color-border);
+  font-size: 9px;
+  color: var(--color-dim);
+}
+
+.promo-footer a {
+  color: var(--color-cyan);
+  text-decoration: none;
+}
+
+.promo-footer a:hover {
+  color: var(--color-green);
 }
 
 .scrollbar-none {
