@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Countdown } from "@/components/session/Countdown";
 import { ExpiredScreen } from "@/components/session/ExpiredScreen";
 import { ShareLink } from "@/components/session/ShareLink";
-import { DeviceSelector, isGenericPlatform } from "@/components/device/DeviceSelector";
+import { DeviceSelector } from "@/components/device/DeviceSelector";
 import { VoteCard } from "@/components/voting/VoteCard";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { PresentationMode } from "@/components/ui/PresentationMode";
@@ -26,7 +26,6 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
   const [needsPassword, setNeedsPassword] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
   const [device, setDevice] = useState<DeviceType>("iphone-16-pro-portrait");
-  const [socialVariantIdx, setSocialVariantIdx] = useState(0);
 
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
@@ -103,11 +102,6 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
     );
   }
 
-  const generic = isGenericPlatform(device);
-  const multiVariant = payload.variants.length > 1;
-  // Clamp so index never goes out of range when device changes
-  const activeSocialIdx = Math.min(socialVariantIdx, payload.variants.length - 1);
-
   return (
     <main className="min-h-screen bg-[var(--color-bg)] p-3 text-[var(--color-white)] md:p-8">
       <div className="mx-auto max-w-7xl space-y-5">
@@ -134,74 +128,26 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
         </header>
 
         {/* Device selector */}
-        <DeviceSelector value={device} onChange={(d) => { setDevice(d); setSocialVariantIdx(0); }} />
+        <DeviceSelector value={device} onChange={setDevice} />
 
-        {generic ? (
-          /* ── Generic / Webpage ── comparison grid ───────────────── */
-          <section className="grid gap-6 lg:gap-8 xl:grid-cols-2">
-            {payload.variants.map((variant) => (
-              <VoteCard
-                comments={comments}
-                count={votes[variant.id] ?? 0}
-                device={device}
-                key={variant.id}
-                sessionId={payload.session.id}
-                variant={variant}
-              />
-            ))}
-          </section>
-        ) : (
-          /* ── Social platform ── one variant at a time ────────────── */
-          <div className="space-y-4">
-            {/* Variant tab switcher — only when multiple variants */}
-            {multiVariant && (
-              <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Variant">
-                {payload.variants.map((variant, idx) => (
-                  <button
-                    className={`device-tab shrink-0 text-[8px] ${activeSocialIdx === idx ? "device-tab-active" : ""}`}
-                    key={variant.id}
-                    onClick={() => setSocialVariantIdx(idx)}
-                    role="tab"
-                    type="button"
-                  >
-                    {variant.original_name
-                      ? variant.original_name.slice(0, 18)
-                      : `VARIANT ${idx + 1}`}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Single centred VoteCard for the active variant */}
-            <div className="flex justify-center">
-              <div className="w-full max-w-lg">
-                <VoteCard
-                  comments={comments}
-                  count={votes[payload.variants[activeSocialIdx].id] ?? 0}
-                  device={device}
-                  isCarousel={multiVariant}
-                  onSlideChange={setSocialVariantIdx}
-                  sessionId={payload.session.id}
-                  totalVariants={payload.variants.length}
-                  variant={payload.variants[activeSocialIdx]}
-                  variantIndex={activeSocialIdx}
-                />
-              </div>
-            </div>
-
-            {/* Variant count indicator */}
-            {multiVariant && (
-              <p className="text-center text-[9px] text-[var(--color-dim)]">
-                {activeSocialIdx + 1} / {payload.variants.length} VARIANTS
-              </p>
-            )}
-          </div>
-        )}
+        {/* Variants comparison grid — always shown for all platforms */}
+        <section className="grid gap-6 lg:gap-8 xl:grid-cols-2">
+          {payload.variants.map((variant) => (
+            <VoteCard
+              comments={comments}
+              count={votes[variant.id] ?? 0}
+              device={device}
+              key={variant.id}
+              sessionId={payload.session.id}
+              variant={variant}
+            />
+          ))}
+        </section>
 
         {/* Promotional footer */}
         <footer className="promo-footer">
-          <span>BUILT WITH</span>
-          <a href="/" rel="noopener">LIKEABILITY.FYI</a>
+          <span>BUILT BY</span>
+          <a href="https://kelashik.com" rel="noopener noreferrer" target="_blank">KELASHIK</a>
           <span>·</span>
           <a href="/" rel="noopener">▶ SHARE YOUR OWN DESIGNS — FREE</a>
         </footer>

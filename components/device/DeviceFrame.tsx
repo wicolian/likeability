@@ -44,53 +44,39 @@ export function DeviceFrame({
       case "android-portrait":
         return <AndroidGeneric>{children}</AndroidGeneric>;
       case "instagram-post":
-        return (
-          <IPhone16Pro>
-            <InstagramFeedChrome {...platformProps}>{children}</InstagramFeedChrome>
-          </IPhone16Pro>
-        );
+        return <IPhone16Pro><InstagramFeedChrome {...platformProps}>{children}</InstagramFeedChrome></IPhone16Pro>;
+      case "instagram-post-tablet":
+        return <IPadPro><InstagramFeedChrome {...platformProps}>{children}</InstagramFeedChrome></IPadPro>;
+      case "instagram-post-desktop":
+        return <DesktopBrowser><InstagramFeedChrome {...platformProps}>{children}</InstagramFeedChrome></DesktopBrowser>;
       case "instagram-story":
-        return (
-          <IPhone16Pro>
-            <InstagramStoryChrome {...platformProps}>{children}</InstagramStoryChrome>
-          </IPhone16Pro>
-        );
+        return <IPhone16Pro><InstagramStoryChrome {...platformProps}>{children}</InstagramStoryChrome></IPhone16Pro>;
+      case "instagram-story-tablet":
+        return <IPadPro><InstagramStoryChrome {...platformProps}>{children}</InstagramStoryChrome></IPadPro>;
+      case "instagram-story-desktop":
+        return <DesktopBrowser><InstagramStoryChrome {...platformProps}>{children}</InstagramStoryChrome></DesktopBrowser>;
       case "instagram-reel":
-        return (
-          <IPhone16Pro>
-            <InstagramReelChrome {...platformProps}>{children}</InstagramReelChrome>
-          </IPhone16Pro>
-        );
+        return <IPhone16Pro><InstagramReelChrome {...platformProps}>{children}</InstagramReelChrome></IPhone16Pro>;
+      case "instagram-reel-tablet":
+        return <IPadPro><InstagramReelChrome {...platformProps}>{children}</InstagramReelChrome></IPadPro>;
+      case "instagram-reel-desktop":
+        return <DesktopBrowser><InstagramReelChrome {...platformProps}>{children}</InstagramReelChrome></DesktopBrowser>;
       case "linkedin-feed":
-        return (
-          <DesktopBrowser>
-            <LinkedInFeedChrome {...platformProps}>{children}</LinkedInFeedChrome>
-          </DesktopBrowser>
-        );
+        return <DesktopBrowser><LinkedInFeedChrome {...platformProps}>{children}</LinkedInFeedChrome></DesktopBrowser>;
       case "linkedin-feed-mobile":
-        return (
-          <IPhone16Pro>
-            <LinkedInFeedChrome {...platformProps}>{children}</LinkedInFeedChrome>
-          </IPhone16Pro>
-        );
+        return <IPhone16Pro><LinkedInFeedChrome {...platformProps}>{children}</LinkedInFeedChrome></IPhone16Pro>;
       case "linkedin-banner":
-        return (
-          <DesktopBrowser>
-            <LinkedInBannerChrome {...platformProps}>{children}</LinkedInBannerChrome>
-          </DesktopBrowser>
-        );
+        return <DesktopBrowser><LinkedInBannerChrome {...platformProps}>{children}</LinkedInBannerChrome></DesktopBrowser>;
       case "x-post":
-        return (
-          <IPhone16Pro>
-            <XPostChrome {...platformProps}>{children}</XPostChrome>
-          </IPhone16Pro>
-        );
+        return <IPhone16Pro><XPostChrome {...platformProps}>{children}</XPostChrome></IPhone16Pro>;
+      case "x-post-desktop":
+        return <DesktopBrowser><XPostChrome {...platformProps}>{children}</XPostChrome></DesktopBrowser>;
       case "tiktok":
-        return (
-          <IPhone16Pro>
-            <TikTokChrome {...platformProps}>{children}</TikTokChrome>
-          </IPhone16Pro>
-        );
+        return <IPhone16Pro><TikTokChrome {...platformProps}>{children}</TikTokChrome></IPhone16Pro>;
+      case "tiktok-tablet":
+        return <IPadPro><TikTokChrome {...platformProps}>{children}</TikTokChrome></IPadPro>;
+      case "tiktok-desktop":
+        return <DesktopBrowser><TikTokChrome {...platformProps}>{children}</TikTokChrome></DesktopBrowser>;
       case "desktop-browser":
         return <DesktopBrowser>{children}</DesktopBrowser>;
       case "ipad-pro-portrait":
@@ -112,10 +98,19 @@ export function DeviceFrame({
       case "android-portrait":
         return "max-w-[430px]";
       case "ipad-pro-portrait":
+      case "instagram-post-tablet":
+      case "instagram-story-tablet":
+      case "instagram-reel-tablet":
+      case "tiktok-tablet":
         return "max-w-[560px]";
       case "linkedin-banner":
       case "desktop-browser":
       case "linkedin-feed":
+      case "instagram-post-desktop":
+      case "instagram-story-desktop":
+      case "instagram-reel-desktop":
+      case "x-post-desktop":
+      case "tiktok-desktop":
         return "max-w-[920px]";
       default:
         return "max-w-[760px]";

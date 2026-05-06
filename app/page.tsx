@@ -37,7 +37,10 @@ export default function Home() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [showSafeZone, setShowSafeZone] = useState(true);
   const [busy, setBusy] = useState(false);
-  const { uploadFile, progress, isUploading } = useFileUpload();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [previewVariantIdx, setPreviewVariantIdx] = useState(0);
+  const { uploadFile } = useFileUpload();
 
   async function createSession(config: SessionConfigValue) {
     const response = await fetch("/api/session/create", {
@@ -47,7 +50,6 @@ export default function Home() {
     });
     const payload = await readApiResponse(response);
     if (!response.ok) throw new Error(payload.error ?? "Could not create session");
-    playSound("upload");
     const created = payload as unknown as SessionState;
     setSession(created);
     return created;
@@ -67,19 +69,35 @@ export default function Home() {
     }
 
     setBusy(true);
+    setUploadingFiles(true);
+    setUploadProgress(0);
+
     try {
       const activeSession = await ensureSession();
       const uploaded: Variant[] = [];
-      for (const file of files) {
-        const variant = await uploadFile(activeSession.session_id, file);
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileBase = (i / files.length) * 100;
+        const fileSlice = 100 / files.length;
+
+        const variant = await uploadFile(activeSession.session_id, file, (filePct) => {
+          setUploadProgress(fileBase + (filePct / 100) * fileSlice);
+        });
         uploaded.push(variant as Variant);
       }
+
+      setUploadProgress(100);
+      playSound("upload");
+
+      const finalCount = Math.min(variants.length + uploaded.length, 5);
       setVariants((current) => [...current, ...uploaded].slice(0, 5));
-    } catch (error) {
-      playSound("uploadFailed");
-      toast.error(error instanceof Error ? error.message : "Upload failed");
+      setPreviewVariantIdx(finalCount - 1);
+    } catch {
+      // uploadFile already toasted the error
     } finally {
       setBusy(false);
+      setUploadingFiles(false);
     }
   }
 
@@ -106,7 +124,12 @@ export default function Home() {
       });
       const payload = await readApiResponse(response);
       if (!response.ok) throw new Error(payload.error ?? "Could not add link");
-      setVariants((current) => [...current, payload.variant as Variant]);
+      const newVariant = payload.variant as Variant;
+      setVariants((current) => {
+        const next = [...current, newVariant].slice(0, 5);
+        setPreviewVariantIdx(next.length - 1);
+        return next;
+      });
       playSound("upload");
       toast.success("LINK ACCEPTED.");
     } catch (error) {
@@ -116,6 +139,8 @@ export default function Home() {
       setBusy(false);
     }
   }
+
+  const activeVariant = variants[Math.min(previewVariantIdx, variants.length - 1)];
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-white)] md:p-8">
@@ -140,12 +165,12 @@ export default function Home() {
 
         <section
           className={`grid gap-6 ${
-            variants[0] ? "lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)]" : "lg:grid-cols-1"
+            variants.length > 0 ? "lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)]" : "lg:grid-cols-1"
           }`}
         >
           <div className="space-y-4">
-            <DropZone disabled={busy || isUploading || variants.length >= 5} onFiles={(files) => void handleFiles(files)} />
-            {isUploading ? <UploadProgress value={progress} /> : null}
+            <DropZone disabled={busy || variants.length >= 5} onFiles={(files) => void handleFiles(files)} />
+            {uploadingFiles ? <UploadProgress value={uploadProgress} /> : null}
             <LinkInput disabled={busy || variants.length >= 5} onLink={handleLink} />
             <div className="flex flex-wrap items-center gap-3">
               <PixelButton
@@ -168,9 +193,27 @@ export default function Home() {
             ) : null}
           </div>
 
-          {variants[0] ? (
+          {variants.length > 0 && activeVariant ? (
             <div className="space-y-4">
               <DeviceSelector value={device} onChange={setDevice} />
+
+              {/* Variant tabs — only when multiple variants uploaded */}
+              {variants.length > 1 && (
+                <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Preview variant">
+                  {variants.map((v, idx) => (
+                    <button
+                      className={`device-tab shrink-0 text-[8px] ${previewVariantIdx === idx ? "device-tab-active" : ""}`}
+                      key={v.id}
+                      onClick={() => setPreviewVariantIdx(idx)}
+                      role="tab"
+                      type="button"
+                    >
+                      {v.original_name ? v.original_name.slice(0, 16) : `VARIANT ${idx + 1}`}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <motion.div className="pixel-border bg-[var(--color-surface)] p-3 md:p-4" layout>
                 <div className="space-y-3">
                   <div className="flex flex-wrap justify-end gap-2">
@@ -190,7 +233,7 @@ export default function Home() {
                   </div>
                   <DeviceFrame device={device} showSafeZone={showSafeZone}>
                     <div className="relative h-full w-full">
-                      <MediaRenderer variant={variants[0]} />
+                      <MediaRenderer variant={activeVariant} />
                     </div>
                   </DeviceFrame>
                 </div>
@@ -217,8 +260,8 @@ export default function Home() {
           }
         }}
       />
-      {variants[0] ? (
-        <ResponsivePreviewPanel isOpen={previewOpen} onClose={() => setPreviewOpen(false)} variant={variants[0]} />
+      {activeVariant ? (
+        <ResponsivePreviewPanel isOpen={previewOpen} onClose={() => setPreviewOpen(false)} variant={activeVariant} />
       ) : null}
     </main>
   );

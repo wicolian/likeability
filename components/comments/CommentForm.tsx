@@ -63,7 +63,7 @@ export function CommentForm({ sessionId, variantId, x, y, onClose }: CommentForm
       </div>
       <textarea
         autoFocus
-        className="pixel-input min-h-24 w-64 resize-none text-[10px]"
+        className="pixel-input min-h-16 w-48 resize-none text-[10px]"
         maxLength={280}
         onChange={(event) => setContent(event.target.value)}
         placeholder="280 CHARS MAX"

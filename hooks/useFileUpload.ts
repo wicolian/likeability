@@ -20,12 +20,15 @@ async function readMagicBytes(file: File): Promise<string> {
 }
 
 export function useFileUpload() {
-  const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
-  async function uploadFile(sessionId: string, file: File): Promise<UploadResult> {
+  async function uploadFile(
+    sessionId: string,
+    file: File,
+    onProgress?: (pct: number) => void,
+  ): Promise<UploadResult> {
     setIsUploading(true);
-    setProgress(5);
+    onProgress?.(5);
 
     try {
       const presignedResponse = await fetch("/api/upload/presigned", {
@@ -53,7 +56,7 @@ export function useFileUpload() {
         request.setRequestHeader("Content-Type", file.type || "application/octet-stream");
         request.upload.onprogress = (event) => {
           if (!event.lengthComputable) return;
-          setProgress(Math.round((event.loaded / event.total) * 85) + 10);
+          onProgress?.(Math.round((event.loaded / event.total) * 80) + 10);
         };
         request.onload = () => {
           if (request.status >= 200 && request.status < 300) resolve();
@@ -84,8 +87,7 @@ export function useFileUpload() {
       const variant = await readApiResponse(variantResponse);
       if (!variantResponse.ok) throw new Error(variant.error ?? "Upload registered but variant failed");
 
-      setProgress(100);
-      playSound("upload");
+      onProgress?.(100);
       return {
         ...(variant.variant as object),
         storage_key: storageKey,
@@ -100,5 +102,5 @@ export function useFileUpload() {
     }
   }
 
-  return { uploadFile, progress, isUploading };
+  return { uploadFile, isUploading };
 }

@@ -27,19 +27,46 @@ const linkedinViewports: { value: DeviceType; label: string }[] = [
   { value: "linkedin-banner",      label: "BANNER" },
 ];
 
+const socialViewportMap: Partial<Record<PlatformKey, { value: DeviceType; label: string }[]>> = {
+  "instagram-post": [
+    { value: "instagram-post",         label: "MOBILE" },
+    { value: "instagram-post-tablet",  label: "TABLET" },
+    { value: "instagram-post-desktop", label: "DESKTOP" },
+  ],
+  "instagram-story": [
+    { value: "instagram-story",         label: "MOBILE" },
+    { value: "instagram-story-tablet",  label: "TABLET" },
+    { value: "instagram-story-desktop", label: "DESKTOP" },
+  ],
+  "instagram-reel": [
+    { value: "instagram-reel",         label: "MOBILE" },
+    { value: "instagram-reel-tablet",  label: "TABLET" },
+    { value: "instagram-reel-desktop", label: "DESKTOP" },
+  ],
+  "x-post": [
+    { value: "x-post",         label: "MOBILE" },
+    { value: "x-post-desktop", label: "DESKTOP" },
+  ],
+  "tiktok": [
+    { value: "tiktok",         label: "MOBILE" },
+    { value: "tiktok-tablet",  label: "TABLET" },
+    { value: "tiktok-desktop", label: "DESKTOP" },
+  ],
+};
+
 interface DeviceSelectorProps {
   value: DeviceType;
   onChange: (device: DeviceType) => void;
 }
 
 export function activePlatform(value: DeviceType): PlatformKey {
-  if (value.startsWith("instagram-")) return value as PlatformKey;
-  if (value.startsWith("linkedin-"))  return "linkedin";
-  if (value === "x-post" || value === "tiktok") return value;
-  if (value === "desktop-browser") {
-    // desktop-browser alone = webpage; iphone/ipad/android = generic
-    return "webpage";
-  }
+  if (value.startsWith("instagram-post"))   return "instagram-post";
+  if (value.startsWith("instagram-story"))  return "instagram-story";
+  if (value.startsWith("instagram-reel"))   return "instagram-reel";
+  if (value.startsWith("linkedin-"))        return "linkedin";
+  if (value.startsWith("x-post"))           return "x-post";
+  if (value.startsWith("tiktok"))           return "tiktok";
+  if (value === "desktop-browser")          return "webpage";
   return "generic";
 }
 
@@ -55,30 +82,26 @@ export function isGenericPlatform(value: DeviceType): boolean {
 
 function platformDefault(platform: PlatformKey): DeviceType {
   switch (platform) {
-    case "instagram-post":
-    case "instagram-story":
-    case "instagram-reel":
-    case "x-post":
-    case "tiktok":
-      return platform;
-    case "linkedin":
-      return "linkedin-feed";
-    case "webpage":
-      return "desktop-browser";
-    default:
-      return "iphone-16-pro-portrait";
+    case "instagram-post":  return "instagram-post";
+    case "instagram-story": return "instagram-story";
+    case "instagram-reel":  return "instagram-reel";
+    case "x-post":          return "x-post";
+    case "tiktok":          return "tiktok";
+    case "linkedin":        return "linkedin-feed";
+    case "webpage":         return "desktop-browser";
+    default:                return "iphone-16-pro-portrait";
   }
 }
 
 export function DeviceSelector({ value, onChange }: DeviceSelectorProps) {
   const platform = activePlatform(value);
-  // Generic uses viewport sub-tabs; LinkedIn does too; webpage is always desktop
+
   const viewportOptions =
     platform === "generic"
-      ? genericViewports.filter((v) => v.value !== "desktop-browser") // desktop is under "webpage"
+      ? genericViewports
       : platform === "linkedin"
       ? linkedinViewports
-      : [];
+      : socialViewportMap[platform] ?? [];
 
   const currentHint = platformOptions.find((p) => p.value === platform)?.hint ?? "";
 
@@ -99,8 +122,8 @@ export function DeviceSelector({ value, onChange }: DeviceSelectorProps) {
         ))}
       </div>
 
-      {/* Viewport sub-tabs (generic / linkedin) */}
-      {viewportOptions.length > 0 && (
+      {/* Viewport sub-tabs */}
+      {viewportOptions.length > 1 && (
         <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Viewport">
           {viewportOptions.map((option) => (
             <button
