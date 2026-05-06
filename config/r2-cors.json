@@ -6,6 +6,7 @@
           "http://localhost:3000",
           "http://localhost:3001",
           "https://likeability.fyi",
+          "https://www.likeability.fyi",
           "https://likeability.vercel.app",
           "https://*.vercel.app"
         ],
