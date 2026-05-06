@@ -43,6 +43,14 @@ export const metadata: Metadata = {
     description:
       "Share designs. Get anonymous votes and pinned comments. No login, no accounts. Sessions auto-delete in 24 hours.",
     locale: "en_US",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Likeability — Designs that get liked",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -50,6 +58,7 @@ export const metadata: Metadata = {
     description:
       "Share designs. Get anonymous votes and pinned comments. No login, no accounts. Sessions auto-delete in 24 hours.",
     creator: "@likeabilityfyi",
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
