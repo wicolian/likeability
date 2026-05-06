@@ -35,6 +35,7 @@ export default function Home() {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [device, setDevice] = useState<DeviceType>("iphone-16-pro-portrait");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [showSafeZone, setShowSafeZone] = useState(true);
   const [busy, setBusy] = useState(false);
   const { uploadFile, progress, isUploading } = useFileUpload();
 
@@ -128,7 +129,7 @@ export default function Home() {
           <div className="min-w-0">
             <h1 className="text-lg text-[var(--color-green)] md:text-2xl">LIKEABILITY</h1>
             <p className="mt-2 max-w-[640px] text-[10px] leading-6 text-[var(--color-dim)]">
-              UPLOAD MOCKS. SHARE ONE LINK. COLLECT ANONYMOUS VOTES AND PINNED COMMENTS.
+              UPLOAD MOCKS. SHARE ONE LINK. COLLECT ANONYMOUS VOTES AND FEEDBACKS.
             </p>
           </div>
           <div className="flex gap-2">
@@ -137,7 +138,11 @@ export default function Home() {
           </div>
         </header>
 
-        <section className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]">
+        <section
+          className={`grid gap-6 ${
+            variants[0] ? "lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)]" : "lg:grid-cols-1"
+          }`}
+        >
           <div className="space-y-4">
             <DropZone disabled={busy || isUploading || variants.length >= 5} onFiles={(files) => void handleFiles(files)} />
             {isUploading ? <UploadProgress value={progress} /> : null}
@@ -156,29 +161,28 @@ export default function Home() {
             ) : null}
           </div>
 
-          <div className="space-y-4">
-            <DeviceSelector value={device} onChange={setDevice} />
-            <motion.div className="pixel-border min-h-[420px] bg-[var(--color-surface)] p-4" layout>
-              {variants[0] ? (
+          {variants[0] ? (
+            <div className="space-y-4">
+              <DeviceSelector value={device} onChange={setDevice} />
+              <motion.div className="pixel-border bg-[var(--color-surface)] p-3 md:p-4" layout>
                 <div className="space-y-3">
-                  <div className="flex justify-end">
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <button className="device-tab text-[8px]" onClick={() => setShowSafeZone((value) => !value)} type="button">
+                      {showSafeZone ? "HIDE SAFE ZONE" : "SHOW SAFE ZONE"}
+                    </button>
                     <button className="device-tab text-[8px]" onClick={() => setPreviewOpen(true)} type="button">
                       👁 PREVIEW ALL SCREENS
                     </button>
                   </div>
-                  <DeviceFrame device={device}>
+                  <DeviceFrame device={device} showSafeZone={showSafeZone}>
                     <div className="relative h-full w-full">
                       <MediaRenderer variant={variants[0]} />
                     </div>
                   </DeviceFrame>
                 </div>
-              ) : (
-                <div className="grid min-h-[380px] place-items-center text-center text-[10px] leading-6 text-[var(--color-dim)]">
-                  FIRST VARIANT PREVIEW APPEARS HERE.
-                </div>
-              )}
-            </motion.div>
-          </div>
+              </motion.div>
+            </div>
+          ) : null}
         </section>
       </div>
 

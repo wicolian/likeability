@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -34,6 +36,7 @@ export function InstagramFeedChrome({
   variantIndex = 0,
   totalVariants = 1,
   onSlideChange,
+  showSafeZone = false,
 }: PlatformChromeProps) {
   const hasCarousel = totalVariants > 1;
 
@@ -73,6 +76,7 @@ export function InstagramFeedChrome({
 
           <div className="relative aspect-[4/5] shrink-0 overflow-hidden bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
             {children}
+            {showSafeZone ? <SafeZoneOverlay kind="instagram-feed" /> : null}
             {hasCarousel ? (
               <>
                 <button

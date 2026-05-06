@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -21,10 +23,11 @@ function Avatar() {
   );
 }
 
-export function InstagramStoryChrome({ children }: PlatformChromeProps) {
+export function InstagramStoryChrome({ children, showSafeZone = false }: PlatformChromeProps) {
   return (
     <div className="relative h-full overflow-hidden bg-black text-white" style={platformFont}>
       <div className="absolute inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">{children}</div>
+      {showSafeZone ? <SafeZoneOverlay kind="instagram-story" /> : null}
       <div className="pointer-events-none absolute inset-x-3 top-3 z-10 space-y-3 drop-shadow">
         <div className="grid grid-cols-5 gap-1">
           {Array.from({ length: 5 }, (_, index) => (

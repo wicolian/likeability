@@ -3,7 +3,7 @@
 import { SoundProvider } from "react-sounds";
 import type { ReactNode } from "react";
 
-const preload = [
+const PRELOAD = [
   "arcade/coin",
   "game/hit",
   "notification/popup",
@@ -11,12 +11,11 @@ const preload = [
   "notification/error",
   "ui/success_blip",
   "notification/warning",
-  "game/void",
-];
+] as const;
 
 export function SoundProviderClient({ children }: { children: ReactNode }) {
   return (
-    <SoundProvider initialEnabled preload={preload}>
+    <SoundProvider preload={[...PRELOAD]}>
       {children}
     </SoundProvider>
   );

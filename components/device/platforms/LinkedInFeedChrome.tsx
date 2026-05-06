@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -25,7 +27,7 @@ function Action({ icon, label }: { icon: string; label: string }) {
   return <button className="flex flex-1 items-center justify-center gap-2 py-3 text-[13px] font-semibold text-neutral-600" type="button"><span>{icon}</span>{label}</button>;
 }
 
-export function LinkedInFeedChrome({ children }: PlatformChromeProps) {
+export function LinkedInFeedChrome({ children, showSafeZone = false }: PlatformChromeProps) {
   return (
     <div className="h-full overflow-auto bg-[#f4f2ee] p-4 text-[#191919]" style={platformFont}>
       <article className="mx-auto max-w-[560px] overflow-hidden rounded-lg border border-neutral-300 bg-white shadow-sm">
@@ -39,8 +41,9 @@ export function LinkedInFeedChrome({ children }: PlatformChromeProps) {
           <button className="text-xl text-neutral-500" type="button">×</button>
         </header>
         <div className="px-4 pb-3 text-[14px] leading-5">A quick look at the new design direction.</div>
-        <div className="aspect-[4/5] w-full overflow-hidden bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
           {children}
+          {showSafeZone ? <SafeZoneOverlay kind="linkedin-feed" /> : null}
         </div>
         <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 text-[13px] text-neutral-600">
           <span><span className="tracking-[-6px]">👍❤️💡</span> 847 reactions</span>

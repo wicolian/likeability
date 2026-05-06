@@ -22,6 +22,7 @@ interface DeviceFrameProps {
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 export function DeviceFrame({
@@ -31,9 +32,10 @@ export function DeviceFrame({
   variantIndex = 0,
   totalVariants = 1,
   onSlideChange,
+  showSafeZone = false,
 }: DeviceFrameProps) {
   const { rotateX, rotateY, handlers } = useDeviceTilt(interactive);
-  const platformProps = { variantIndex, totalVariants, onSlideChange };
+  const platformProps = { variantIndex, totalVariants, onSlideChange, showSafeZone };
 
   const frame = (() => {
     switch (device) {
@@ -98,10 +100,32 @@ export function DeviceFrame({
     }
   })();
 
+  const maxWidth = (() => {
+    switch (device) {
+      case "instagram-post":
+      case "instagram-story":
+      case "instagram-reel":
+      case "linkedin-feed-mobile":
+      case "x-post":
+      case "tiktok":
+      case "iphone-16-pro-portrait":
+      case "android-portrait":
+        return "max-w-[430px]";
+      case "ipad-pro-portrait":
+        return "max-w-[560px]";
+      case "linkedin-banner":
+      case "desktop-browser":
+      case "linkedin-feed":
+        return "max-w-[920px]";
+      default:
+        return "max-w-[760px]";
+    }
+  })();
+
   return (
     <div className="device-perspective" {...handlers}>
       <div
-        className="mx-auto w-full max-w-[760px] transition-transform duration-150"
+        className={`mx-auto w-full ${maxWidth} transition-transform duration-150`}
         style={{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)` }}
       >
         {frame}

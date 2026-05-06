@@ -59,7 +59,12 @@ export function useFileUpload() {
           if (request.status >= 200 && request.status < 300) resolve();
           else reject(new Error("Upload failed"));
         };
-        request.onerror = () => reject(new Error("Upload failed"));
+        request.onerror = () =>
+          reject(
+            new Error(
+              "Upload blocked by storage CORS. Apply config/r2-cors.json to the R2 bucket, then retry.",
+            ),
+          );
         request.send(file);
       });
 

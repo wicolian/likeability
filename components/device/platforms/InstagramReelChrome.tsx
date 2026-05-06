@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -27,12 +29,14 @@ export function InstagramReelChrome({
   variantIndex = 0,
   totalVariants = 1,
   onSlideChange,
+  showSafeZone = false,
 }: PlatformChromeProps) {
   const hasCarousel = totalVariants > 1;
 
   return (
     <div className="relative h-full overflow-hidden bg-black text-white" style={platformFont}>
       <div className="absolute inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">{children}</div>
+      {showSafeZone ? <SafeZoneOverlay kind="instagram-reel" /> : null}
       <div className="absolute inset-x-4 top-4 z-10 flex items-center text-[18px] font-semibold drop-shadow">
         <span className="text-2xl">←</span>
         <span className="ml-4">Reels</span>

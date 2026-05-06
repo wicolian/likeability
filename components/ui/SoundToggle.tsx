@@ -2,11 +2,9 @@
 
 import { Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-import { useSoundEnabled } from "react-sounds";
 import { isSfxEnabled, playSound, playSoundOnce, setSfxEnabled } from "@/lib/sounds";
 
 export function SoundToggle() {
-  const [, setProviderEnabled] = useSoundEnabled();
   const [enabled, setEnabled] = useState(() => (typeof window === "undefined" ? true : isSfxEnabled()));
 
   return (
@@ -19,7 +17,6 @@ export function SoundToggle() {
         setEnabled(next);
         if (next) {
           setSfxEnabled(true);
-          setProviderEnabled(true);
           window.setTimeout(() => playSound("soundOn", 1), 0);
           return;
         }
@@ -27,7 +24,6 @@ export function SoundToggle() {
         playSoundOnce("soundOn", 0.75);
         window.setTimeout(() => {
           setSfxEnabled(false);
-          setProviderEnabled(false);
         }, 120);
       }}
       type="button"

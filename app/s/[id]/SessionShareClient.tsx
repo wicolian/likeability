@@ -69,12 +69,8 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
     payload.variants.length >= 2 &&
     payload.variants.length <= 5 &&
     payload.variants.every((variant) => variant.type === "image");
-  const activeCarouselVariant = useInstagramCarousel ? payload.variants[carouselIndex] : null;
-
-  useEffect(() => {
-    if (!payload) return;
-    setCarouselIndex((current) => Math.min(current, Math.max(0, payload.variants.length - 1)));
-  }, [payload]);
+  const boundedCarouselIndex = payload ? Math.min(carouselIndex, Math.max(0, payload.variants.length - 1)) : 0;
+  const activeCarouselVariant = useInstagramCarousel ? payload.variants[boundedCarouselIndex] : null;
 
   if (status === 410 || status === 404) return <ExpiredScreen status={status} />;
 
@@ -145,7 +141,7 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
                 sessionId={payload.session.id}
                 totalVariants={payload.variants.length}
                 variant={activeCarouselVariant}
-                variantIndex={carouselIndex}
+                variantIndex={boundedCarouselIndex}
               />
             </div>
           ) : (

@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -25,7 +27,7 @@ function IconMetric({ icon, count }: { icon: string; count?: string }) {
   return <div className="flex items-center gap-1 text-[13px] text-neutral-500"><span>{icon}</span>{count ? <span>{count}</span> : null}</div>;
 }
 
-export function XPostChrome({ children }: PlatformChromeProps) {
+export function XPostChrome({ children, showSafeZone = false }: PlatformChromeProps) {
   return (
     <div className="flex h-full flex-col bg-black text-neutral-100" style={platformFont}>
       <header className="flex h-12 shrink-0 items-center border-b border-neutral-800 px-4">
@@ -44,8 +46,9 @@ export function XPostChrome({ children }: PlatformChromeProps) {
                 <span className="ml-auto text-xl leading-none text-neutral-500">···</span>
               </div>
               <p className="mt-2 text-[15px] leading-5">Tweet content would appear here, your design is below.</p>
-              <div className="mt-3 aspect-video overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
+              <div className="relative mt-3 aspect-video overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
                 {children}
+                {showSafeZone ? <SafeZoneOverlay kind="x-post" /> : null}
               </div>
               <div className="mt-3 flex justify-between">
                 <IconMetric count="142" icon="💬" />

@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -20,10 +22,11 @@ function RailButton({ icon, count }: { icon: string; count?: string }) {
   );
 }
 
-export function TikTokChrome({ children }: PlatformChromeProps) {
+export function TikTokChrome({ children, showSafeZone = false }: PlatformChromeProps) {
   return (
     <div className="relative h-full overflow-hidden bg-black text-white" style={platformFont}>
       <div className="absolute inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">{children}</div>
+      {showSafeZone ? <SafeZoneOverlay kind="tiktok" /> : null}
       <header className="absolute inset-x-4 top-4 z-10 flex items-center justify-center gap-4 text-[15px] font-semibold drop-shadow">
         <span className="text-white/70">Following</span>
         <span>For You</span>

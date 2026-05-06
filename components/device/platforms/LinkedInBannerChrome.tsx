@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { SafeZoneOverlay } from "./SafeZoneOverlay";
 
 interface PlatformChromeProps {
   children: ReactNode;
   variantIndex?: number;
   totalVariants?: number;
   onSlideChange?: (i: number) => void;
+  showSafeZone?: boolean;
 }
 
 const platformFont = {
@@ -21,12 +23,13 @@ function Avatar() {
   );
 }
 
-export function LinkedInBannerChrome({ children }: PlatformChromeProps) {
+export function LinkedInBannerChrome({ children, showSafeZone = false }: PlatformChromeProps) {
   return (
     <div className="h-full overflow-auto bg-[#f4f2ee] p-4 text-[#191919]" style={platformFont}>
       <section className="mx-auto max-w-[820px] overflow-hidden rounded-lg border border-neutral-300 bg-white shadow-sm">
-        <div className="aspect-[4/1] overflow-hidden bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
+        <div className="relative aspect-[4/1] overflow-hidden bg-neutral-950 [&_iframe]:h-full [&_iframe]:w-full [&_img]:!object-cover [&_video]:!object-cover">
           {children}
+          {showSafeZone ? <SafeZoneOverlay kind="linkedin-banner" /> : null}
         </div>
         <div className="px-6 pb-6">
           <div className="-mt-14">

@@ -39,6 +39,7 @@ export function VoteCard({
   const [voted, setVoted] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [showSafeZone, setShowSafeZone] = useState(true);
 
   async function submitVote() {
     try {
@@ -66,6 +67,9 @@ export function VoteCard({
           {variant.original_name ?? `VARIANT ${variant.position + 1}`}
         </h2>
         <div className="flex shrink-0 items-center gap-2">
+          <button className="device-tab text-[8px]" onClick={() => setShowSafeZone((value) => !value)} type="button">
+            {showSafeZone ? "HIDE SAFE ZONE" : "SHOW SAFE ZONE"}
+          </button>
           <button className="device-tab text-[8px]" onClick={() => setPreviewOpen(true)} type="button">
             👁 PREVIEW ALL SCREENS
           </button>
@@ -76,6 +80,7 @@ export function VoteCard({
         <DeviceFrame
           device={device}
           onSlideChange={onSlideChange}
+          showSafeZone={showSafeZone}
           totalVariants={totalVariants}
           variantIndex={variantIndex}
         >
