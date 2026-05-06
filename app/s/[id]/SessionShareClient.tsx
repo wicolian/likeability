@@ -13,6 +13,7 @@ import { PresentationMode } from "@/components/ui/PresentationMode";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { useComments } from "@/hooks/useComments";
 import { useVotes } from "@/hooks/useVotes";
+import { playSound } from "@/lib/sounds";
 import type { DeviceType, SessionPayload } from "@/lib/types";
 
 interface SessionShareClientProps {
@@ -40,7 +41,10 @@ export function SessionShareClient({ slug }: SessionShareClientProps) {
     if (response.status === 401) {
       setNeedsPassword(true);
       setStatus(401);
-      if (pass) toast.error(data.error ?? "Incorrect password");
+      if (pass) {
+        playSound("negativeReaction", 0.7);
+        toast.error(data.error ?? "Incorrect password");
+      }
       return;
     }
 

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720" fill="none"><metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description><dc:creator>RealFaviconGenerator</dc:creator><dc:source>https://realfavicongenerator.net</dc:source></rdf:Description></rdf:RDF></metadata><g clip-path="url(#clip0_1731_2)">
+<rect width="720" height="720" fill="#111111" style="fill:#111111;fill:color(display-p3 0.0667 0.0667 0.0667);fill-opacity:1;"></rect>
+<rect y="600" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="120" y="480" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="240" y="360" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="360" y="480" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="120" y="240" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="360" y="240" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="480" y="120" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+<rect x="600" width="120" height="120" fill="white" style="fill:white;fill-opacity:1;"></rect>
+</g><defs>
+<clipPath id="clip0_1731_2">
+<rect width="720" height="720" fill="white" style="fill:white;fill-opacity:1;"></rect>
+</clipPath>
+</defs><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: invert(100%); } }
+</style></svg>

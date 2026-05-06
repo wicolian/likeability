@@ -77,7 +77,7 @@ export function ResponsivePreviewPanel({ variant, isOpen, onClose }: ResponsiveP
   const [active, setActive] = useState<(typeof previews)[number]["key"]>("mobile");
 
   useEffect(() => {
-    if (isOpen) playSound("upload", 0.55);
+    if (isOpen) playSound("popup", 0.55);
   }, [isOpen]);
 
   useEffect(() => {
@@ -107,7 +107,14 @@ export function ResponsivePreviewPanel({ variant, isOpen, onClose }: ResponsiveP
                   {variant.original_name ?? `VARIANT ${variant.position + 1}`}
                 </p>
               </div>
-              <button className="device-tab device-tab-active" onClick={onClose} type="button">
+              <button
+                className="device-tab device-tab-active"
+                onClick={() => {
+                  playSound("popup", 0.45);
+                  onClose();
+                }}
+                type="button"
+              >
                 CLOSE
               </button>
             </header>

@@ -148,7 +148,14 @@ export default function Home() {
             {isUploading ? <UploadProgress value={progress} /> : null}
             <LinkInput disabled={busy || variants.length >= 5} onLink={handleLink} />
             <div className="flex flex-wrap items-center gap-3">
-              <PixelButton onClick={() => setConfigOpen(true)} tone="pink" type="button">
+              <PixelButton
+                onClick={() => {
+                  playSound("popup", 0.55);
+                  setConfigOpen(true);
+                }}
+                tone="pink"
+                type="button"
+              >
                 SESSION SETTINGS
               </PixelButton>
               {session ? <ShareLink url={session.share_url} /> : null}
@@ -170,7 +177,14 @@ export default function Home() {
                     <button className="device-tab text-[8px]" onClick={() => setShowSafeZone((value) => !value)} type="button">
                       {showSafeZone ? "HIDE SAFE ZONE" : "SHOW SAFE ZONE"}
                     </button>
-                    <button className="device-tab text-[8px]" onClick={() => setPreviewOpen(true)} type="button">
+                    <button
+                      className="device-tab text-[8px]"
+                      onClick={() => {
+                        playSound("popup", 0.5);
+                        setPreviewOpen(true);
+                      }}
+                      type="button"
+                    >
                       👁 PREVIEW ALL SCREENS
                     </button>
                   </div>
@@ -188,9 +202,13 @@ export default function Home() {
 
       <SessionConfig
         open={configOpen}
-        onClose={() => setConfigOpen(false)}
+        onClose={() => {
+          playSound("popup", 0.4);
+          setConfigOpen(false);
+        }}
         onSubmit={(config) => {
           setPendingConfig(config);
+          playSound("upload", 0.6);
           setConfigOpen(false);
           if (!session) {
             void createSession(config).catch((error) =>

@@ -4,6 +4,7 @@ import { Link2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PixelButton } from "@/components/ui/PixelButton";
+import { playSound } from "@/lib/sounds";
 import { detectVariantTypeFromUrl, shouldWarnAboutSource } from "@/lib/video-url";
 
 interface LinkInputProps {
@@ -22,6 +23,7 @@ export function LinkInput({ disabled, onLink }: LinkInputProps) {
     try {
       new URL(url);
     } catch {
+      playSound("negativeReaction", 0.7);
       toast.error("ENTER A VALID URL.");
       return;
     }
@@ -29,7 +31,10 @@ export function LinkInput({ disabled, onLink }: LinkInputProps) {
     setPending(true);
     try {
       const warning = shouldWarnAboutSource(url);
-      if (warning) toast.warning(warning);
+      if (warning) {
+        playSound("warning", 0.55);
+        toast.warning(warning);
+      }
       await onLink(url, detectVariantTypeFromUrl(url));
       setValue("");
     } finally {
@@ -40,9 +45,9 @@ export function LinkInput({ disabled, onLink }: LinkInputProps) {
   return (
     <div className="flex w-full flex-col gap-3 md:flex-row">
       <label className="relative min-w-0 flex-1">
-        <Link2 className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-dim)]" size={18} />
+        <Link2 className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-dim)]" size={18} />
         <input
-          className="pixel-input w-full pl-12"
+          className="pixel-input w-full pr-12"
           disabled={disabled || pending}
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={(event) => {
