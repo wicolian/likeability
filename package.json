@@ -19,6 +19,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/howler": "^2.2.12",
     "@types/uuid": "^9.0.8",
+    "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^2.4.3",
     "framer-motion": "12.38.0",
     "howler": "^2.2.4",

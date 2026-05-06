@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import { SoundProviderClient } from "@/components/ui/SoundProviderClient";
 import "./globals.css";
@@ -149,6 +150,7 @@ export default function RootLayout({
         <SoundProviderClient>
           {children}
           <Toaster richColors theme="dark" />
+          <Analytics />
         </SoundProviderClient>
       </body>
     </html>
